@@ -253,6 +253,18 @@ class ScreenshotTest {
         )
     }
 
+    @Test fun longTitleHyphenation() = shot("2_rezept_langer_titel") {
+        RecipeContent(
+            recipe = TestData.bauerntopf.copy(title = "5-Minuten-Quarktaschen", description = "Blätterteigschnecken mit Quark, Himbeeren und Zimt."),
+            photo = null, servings = 3, checked = emptySet(), actions = RecipeActions(),
+        )
+    }
+
+    @Test fun overviewPantryTolerance() = shot("1_uebersicht_vorrat_spielraum") {
+        val kitchen = io.github.owbua.otai.data.model.KitchenState(pantry = listOf("Kartoffeln", "Möhren", "Paprikaschoten", "Tomaten", "Tomatenmark", "Gemüsebrühe", "Zwiebeln", "Champignons").map { io.github.owbua.otai.data.model.PantryItem(it) })
+        OverviewContent(buildOverview(all, "", io.github.owbua.otai.ui.overview.FILTER_PANTRY, kitchen, pantryMaxMissing = 3), { null }, io.github.owbua.otai.ui.overview.OverviewActions())
+    }
+
     @Test fun overviewEmpty() = shot("1_uebersicht_leer") {
         OverviewContent(buildOverview(emptyList(), "", FILTER_ALL), { null }, io.github.owbua.otai.ui.overview.OverviewActions())
     }

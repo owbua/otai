@@ -3,6 +3,9 @@ package io.github.owbua.otai.ui.theme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
@@ -35,16 +38,26 @@ val RobotoFlexWide = flex(115f, 500, 600, 700, 800)
 val RobotoFlexWider = flex(125f, 700, 800, 900)
 val RobotoFlexWidest = flex(140f, 800, 900)
 
-private val base = TextStyle(fontFamily = RobotoFlex)
+// Deutsche Silbentrennung statt Umbruch mitten im Wort („Quarkta-schen“ → „Quark-taschen“);
+// Sprache fest auf Deutsch, damit die Trennung auch bei englisch eingestelltem Gerät stimmt.
+private val base = TextStyle(
+    fontFamily = RobotoFlex,
+    hyphens = Hyphens.Auto,
+    lineBreak = LineBreak.Paragraph,
+    localeList = LocaleList("de-DE"),
+)
+
+/** Überschriften: ausgewogene Zeilen (keine einzelne Silbe allein in der letzten Zeile). */
+private val heading = base.copy(lineBreak = LineBreak.Heading)
 
 val OtaiTypography = Typography(
-    displayLarge = base.copy(fontFamily = RobotoFlexWidest, fontWeight = FontWeight(900), fontSize = 57.sp, lineHeight = 64.sp),
-    displayMedium = base.copy(fontFamily = RobotoFlexWider, fontWeight = FontWeight(800), fontSize = 44.sp, lineHeight = 48.sp, letterSpacing = (-0.5).sp),
-    displaySmall = base.copy(fontFamily = RobotoFlexWider, fontWeight = FontWeight(800), fontSize = 36.sp, lineHeight = 42.sp, letterSpacing = (-0.3).sp),
-    headlineLarge = base.copy(fontFamily = RobotoFlexWide, fontWeight = FontWeight(800), fontSize = 32.sp, lineHeight = 40.sp),
-    headlineMedium = base.copy(fontFamily = RobotoFlexWide, fontWeight = FontWeight(500), fontSize = 28.sp, lineHeight = 38.sp),
-    headlineSmall = base.copy(fontFamily = RobotoFlexWide, fontWeight = FontWeight(800), fontSize = 24.sp, lineHeight = 32.sp),
-    titleLarge = base.copy(fontFamily = RobotoFlexWide, fontWeight = FontWeight(800), fontSize = 22.sp, lineHeight = 28.sp),
+    displayLarge = heading.copy(fontFamily = RobotoFlexWidest, fontWeight = FontWeight(900), fontSize = 57.sp, lineHeight = 64.sp),
+    displayMedium = heading.copy(fontFamily = RobotoFlexWider, fontWeight = FontWeight(800), fontSize = 44.sp, lineHeight = 48.sp, letterSpacing = (-0.5).sp),
+    displaySmall = heading.copy(fontFamily = RobotoFlexWider, fontWeight = FontWeight(800), fontSize = 36.sp, lineHeight = 42.sp, letterSpacing = (-0.3).sp),
+    headlineLarge = heading.copy(fontFamily = RobotoFlexWide, fontWeight = FontWeight(800), fontSize = 32.sp, lineHeight = 40.sp),
+    headlineMedium = heading.copy(fontFamily = RobotoFlexWide, fontWeight = FontWeight(500), fontSize = 28.sp, lineHeight = 38.sp),
+    headlineSmall = heading.copy(fontFamily = RobotoFlexWide, fontWeight = FontWeight(800), fontSize = 24.sp, lineHeight = 32.sp),
+    titleLarge = heading.copy(fontFamily = RobotoFlexWide, fontWeight = FontWeight(800), fontSize = 22.sp, lineHeight = 28.sp),
     titleMedium = base.copy(fontWeight = FontWeight(700), fontSize = 16.sp, lineHeight = 22.sp),
     titleSmall = base.copy(fontWeight = FontWeight(700), fontSize = 14.sp, lineHeight = 20.sp),
     bodyLarge = base.copy(fontWeight = FontWeight(400), fontSize = 16.sp, lineHeight = 24.sp),

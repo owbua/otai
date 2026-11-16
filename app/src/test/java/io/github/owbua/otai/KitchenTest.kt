@@ -164,4 +164,18 @@ class KitchenTest {
         val some = io.github.owbua.otai.ui.overview.buildOverview(all, "", io.github.owbua.otai.ui.overview.FILTER_PANTRY, pantryOf("Kartoffeln"))
         assertEquals("Noch nicht alles da", some.emptyHint?.first)
     }
+
+    @Test fun pantryFilterToleratesMissingIngredientsWhenAllowed() {
+        val all = listOf(TestData.bauerntopf, TestData.hackPilz)
+        val ohneHack = bauerntopfVorrat.filter { it != "Hackfleisch" }.toTypedArray()
+        val strict = io.github.owbua.otai.ui.overview.buildOverview(all, "", io.github.owbua.otai.ui.overview.FILTER_PANTRY, pantryOf(*ohneHack))
+        assertTrue(strict.recipes.isEmpty())
+        val relaxed = io.github.owbua.otai.ui.overview.buildOverview(all, "", io.github.owbua.otai.ui.overview.FILTER_PANTRY, pantryOf(*ohneHack), pantryMaxMissing = 1)
+        assertEquals(listOf("Bauerntopf"), relaxed.recipes.map { it.title })
+        assertEquals("Hackfleisch", relaxed.cards.single().missing)
+        // mit vollem Vorrat steht „alles da“ vorn und zeigt nichts Fehlendes
+        val full = io.github.owbua.otai.ui.overview.buildOverview(all, "", io.github.owbua.otai.ui.overview.FILTER_PANTRY, pantryOf(*bauerntopfVorrat), pantryMaxMissing = 3)
+        assertEquals("Bauerntopf", full.recipes.first().title)
+        assertNull(full.cards.first().missing)
+    }
 }

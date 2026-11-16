@@ -54,6 +54,7 @@ class SettingsActions(
     val onBack: () -> Unit = {},
     val onMaxMissing: (Int) -> Unit = {},
     val onMinResults: (Int) -> Unit = {},
+    val onPantryFilterMaxMissing: (Int) -> Unit = {},
     val onImportFile: () -> Unit = {},
     val onImportUrl: () -> Unit = {},
     val onPrompt: () -> Unit = {},
@@ -82,6 +83,21 @@ fun SettingsContent(settings: Settings, actions: SettingsActions, version: Strin
             IconButton(onClick = actions.onBack, modifier = Modifier.size(48.dp)) { Icon(KIcons.ArrowBack, contentDescription = "Zurück") }
         }
         Text("Einstellungen", style = MaterialTheme.typography.displaySmall, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+
+        Section(KIcons.Pantry, "Aus Vorrat", "Filter in der Übersicht") {
+            Text("Fehlende Zutaten", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 4.dp))
+            ConnectedChoice(
+                options = (0..Settings.MAX_MISSING_LIMIT).toList(), value = settings.pantryFilterMaxMissing,
+                label = { if (it == 0) "Alles da" else "≤ $it" }, wideFirst = true, onChange = actions.onPantryFilterMaxMissing,
+            )
+            Text(maxMissingText(settings.pantryFilterMaxMissing), style = MaterialTheme.typography.bodyLarge)
+            if (settings.pantryFilterMaxMissing > 0) {
+                Text(
+                    "Die Kacheln zeigen dann, was noch fehlt; Rezepte mit allem im Vorrat stehen vorn.",
+                    style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant,
+                )
+            }
+        }
 
         Section(KIcons.Dice, "Überrasch mich", "Zufällige Rezepte von chefkoch.de") {
             Text("Fehlende Zutaten", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 4.dp))

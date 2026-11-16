@@ -178,14 +178,14 @@ private fun IngredientEditor(ing: EditIngredient, cb: EditCallbacks) {
         Modifier.clip(RoundedCornerShape(20.dp)).background(c.surfaceContainerLow).padding(start = 12.dp, top = 12.dp, bottom = 12.dp, end = 4.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(ing.amount, { v -> cb.updateIngredient(ing.uid) { it.copy(amount = v) } }, label = { Text("Menge") }, singleLine = true, keyboardOptions = DecimalKeys, shape = FieldShape, modifier = Modifier.width(88.dp))
-            OutlinedTextField(ing.unit, { v -> cb.updateIngredient(ing.uid) { it.copy(unit = v) } }, label = { Text("Einheit") }, singleLine = true, shape = FieldShape, modifier = Modifier.width(88.dp))
-            Spacer(Modifier.weight(1f))
+        // Zutat zuerst, darunter Menge und Einheit
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(ing.name, { v -> cb.updateIngredient(ing.uid) { it.copy(name = v) } }, label = { Text("Zutat") }, singleLine = true, shape = FieldShape, keyboardOptions = SentenceKeys, modifier = Modifier.weight(1f))
             IconButton(onClick = { cb.removeIngredient(ing.uid) }) { Icon(KIcons.Delete, contentDescription = "Zutat entfernen", tint = c.onSurfaceVariant) }
         }
-        Row(Modifier.padding(end = 8.dp)) {
-            OutlinedTextField(ing.name, { v -> cb.updateIngredient(ing.uid) { it.copy(name = v) } }, label = { Text("Zutat") }, singleLine = true, shape = FieldShape, keyboardOptions = SentenceKeys, modifier = Modifier.weight(1f))
+        Row(Modifier.padding(end = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(ing.amount, { v -> cb.updateIngredient(ing.uid) { it.copy(amount = v) } }, label = { Text("Menge") }, singleLine = true, keyboardOptions = DecimalKeys, shape = FieldShape, modifier = Modifier.weight(1f))
+            OutlinedTextField(ing.unit, { v -> cb.updateIngredient(ing.uid) { it.copy(unit = v) } }, label = { Text("Einheit") }, singleLine = true, shape = FieldShape, modifier = Modifier.weight(1f))
         }
         Row(Modifier.padding(end = 8.dp)) {
             OutlinedTextField(ing.note, { v -> cb.updateIngredient(ing.uid) { it.copy(note = v) } }, label = { Text("Hinweis (optional)") }, singleLine = true, shape = FieldShape, modifier = Modifier.weight(1f))

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import io.github.owbua.otai.data.model.KitchenState
-import io.github.owbua.otai.domain.cookableFromPantry
+import io.github.owbua.otai.domain.missingFromPantry
 import kotlinx.coroutines.flow.stateIn
 import java.text.Collator
 import java.util.Locale
@@ -31,6 +31,8 @@ data class RecipeCardUi(
     val meta: String,
     val favorite: Boolean,
     val photo: String?,
+    /** Filter „Aus Vorrat“: was noch fehlt (null = nichts bzw. Filter aus) */
+    val missing: String? = null,
 )
 
 fun Recipe.toCard(): RecipeCardUi {
@@ -59,7 +61,7 @@ const val FILTER_FAV = "fav"
 const val FILTER_QUICK = "schnell"
 const val FILTER_PANTRY = "vorrat"
 
-fun buildOverview(all: List<Recipe>?, query: String, filter: String, kitchen: KitchenState? = null): OverviewState {
+fun buildOverview(all: List<Recipe>?, query: String, filter: String, kitchen: KitchenState? = null, pantryMaxMissing: Int = 0): OverviewState {
     if (all == null) return OverviewState(loading = true, query = query)
     val tagCounts = all.flatMap { r -> r.tags.map { it.lowercase(Locale.GERMAN) to it } }
         .groupBy({ it.first }, { it.second })
@@ -81,7 +83,8 @@ fun buildOverview(all: List<Recipe>?, query: String, filter: String, kitchen: Ki
         when {
             effectiveFilter == FILTER_FAV -> r.favorite
             effectiveFilter == FILTER_QUICK -> (r.times.totalMin ?: r.times.activeMin ?: Int.MAX_VALUE) <= 30
-            effectiveFilter == FILTER_PANTRY -> kitchen != null && cookableFromPantry(r, kitchen)
+            effectiveFilter == FILTER_PANTRY -> kitchen != null && r.ingredients.isNotEmpty() &&
+                missingFromPantry(r, kitchen).size <= pantryMaxMissing
             effectiveFilter.startsWith("tag:") -> r.tags.any { it.lowercase(Locale.GERMAN) == effectiveFilter.removePrefix("tag:") }
             else -> true
         }
@@ -92,18 +95,29 @@ fun buildOverview(all: List<Recipe>?, query: String, filter: String, kitchen: Ki
             r.ingredients.forEach { append(it.name).append(' ') }
         }.lowercase(Locale.GERMAN).contains(q)
     }.sortedWith { a, b -> collator.compare(a.title, b.title) }
+        .let { sorted ->
+            // „Aus Vorrat“ mit Spielraum: erst, wofür alles da ist, dann nach Zahl der fehlenden Zutaten
+            if (effectiveFilter == FILTER_PANTRY && kitchen != null && pantryMaxMissing > 0) sorted.sortedBy { missingFromPantry(it, kitchen).size } else sorted
+        }
     return OverviewState(
         loading = false,
         totalCount = all.size,
         query = query,
         chips = ids.map { (id, label) -> FilterChipUi(id, label, id == effectiveFilter) },
         recipes = list,
-        cards = list.map { it.toCard() },
+        cards = list.map { r ->
+            val missing = if (effectiveFilter == FILTER_PANTRY && kitchen != null) missingFromPantry(r, kitchen) else emptyList()
+            r.toCard().copy(missing = missing.takeIf { it.isNotEmpty() }?.joinToString(", ") { it.name.substringBefore(',').trim() })
+        },
         emptyHint = if (effectiveFilter == FILTER_PANTRY && list.isEmpty() && q.isEmpty()) {
             if (kitchen?.pantry.isNullOrEmpty()) {
                 "Vorrat ist leer" to "Trag unter Einkauf → Vorrat ein, was du zuhause hast. Dann erscheinen hier die Rezepte, für die alles da ist."
             } else {
-                "Noch nicht alles da" to "Für kein Rezept ist jede Zutat im Vorrat. Grundzutaten wie Salz, Pfeffer und Öl sowie Zutaten „nach Belieben“ zählen nicht mit."
+                "Noch nicht alles da" to (
+                    (if (pantryMaxMissing == 0) "Für kein Rezept ist jede Zutat im Vorrat. In den Einstellungen kannst du erlauben, dass ein paar Zutaten fehlen dürfen. "
+                    else "Bei keinem Rezept fehlen höchstens $pantryMaxMissing Zutaten. ") +
+                        "Grundzutaten wie Salz, Pfeffer und Öl sowie Zutaten „nach Belieben“ zählen nicht mit."
+                )
             }
         } else null,
     )
@@ -112,14 +126,17 @@ fun buildOverview(all: List<Recipe>?, query: String, filter: String, kitchen: Ki
 class OverviewViewModel(
     private val repo: RecipeRepository,
     private val kitchen: KitchenRepository? = null,
+    private val settings: kotlinx.coroutines.flow.Flow<Int> = flowOf(0),
 ) : ViewModel() {
     private val query = MutableStateFlow("")
     private val filter = MutableStateFlow(FILTER_ALL)
     private val selection = MutableStateFlow<Set<String>>(emptySet())
 
-    val state: StateFlow<OverviewState> = combine(repo.recipes, query, filter, selection, kitchen?.state ?: flowOf(null)) { all, q, f, sel, k ->
+    private val pantry = combine(kitchen?.state ?: flowOf(null), settings) { k, max -> k to max }
+
+    val state: StateFlow<OverviewState> = combine(repo.recipes, query, filter, selection, pantry) { all, q, f, sel, (k, max) ->
         val existing = all?.mapTo(HashSet()) { it.id }.orEmpty()
-        buildOverview(all, q, f, k).copy(selected = sel intersect existing)
+        buildOverview(all, q, f, k, max).copy(selected = sel intersect existing)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), OverviewState())
 
     fun setQuery(q: String) { query.value = q }

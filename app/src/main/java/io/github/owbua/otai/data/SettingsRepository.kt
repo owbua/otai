@@ -12,6 +12,8 @@ data class Settings(
     val surpriseMinResults: Int = DEFAULT_MIN_RESULTS,
     /** „Überrasch mich“: true = aus dem Vorrat, false = beliebige Rezepte. */
     val surpriseUsePantry: Boolean = true,
+    /** Filter „Aus Vorrat“ in der Übersicht: so viele nötige Zutaten dürfen fehlen. */
+    val pantryFilterMaxMissing: Int = 0,
 ) {
     companion object {
         const val DEFAULT_MAX_MISSING = 1
@@ -31,7 +33,14 @@ class SettingsRepository(context: Context) {
         surpriseMaxMissing = prefs.getInt(KEY_MAX_MISSING, Settings.DEFAULT_MAX_MISSING).coerceIn(0, Settings.MAX_MISSING_LIMIT),
         surpriseMinResults = prefs.getInt(KEY_MIN_RESULTS, Settings.DEFAULT_MIN_RESULTS).coerceIn(1, 10),
         surpriseUsePantry = prefs.getBoolean(KEY_USE_PANTRY, true),
+        pantryFilterMaxMissing = prefs.getInt(KEY_FILTER_MAX_MISSING, 0).coerceIn(0, Settings.MAX_MISSING_LIMIT),
     )
+
+    fun setPantryFilterMaxMissing(n: Int) {
+        val v = n.coerceIn(0, Settings.MAX_MISSING_LIMIT)
+        prefs.edit().putInt(KEY_FILTER_MAX_MISSING, v).apply()
+        _state.value = _state.value.copy(pantryFilterMaxMissing = v)
+    }
 
     fun setSurpriseMinResults(n: Int) {
         val v = n.coerceIn(1, 10)
@@ -54,5 +63,6 @@ class SettingsRepository(context: Context) {
         const val KEY_MAX_MISSING = "ueberrasch_max_fehlend"
         const val KEY_MIN_RESULTS = "ueberrasch_min_treffer"
         const val KEY_USE_PANTRY = "ueberrasch_vorrat"
+        const val KEY_FILTER_MAX_MISSING = "filter_vorrat_max_fehlend"
     }
 }

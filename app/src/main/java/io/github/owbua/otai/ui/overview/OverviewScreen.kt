@@ -1,5 +1,18 @@
 package io.github.owbua.otai.ui.overview
 
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.Velocity
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
+import kotlin.math.roundToInt
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -120,37 +133,24 @@ fun OverviewContent(
 
     BackHandler(enabled = state.selecting) { actions.onClearSelection() }
 
-    Box(Modifier.fillMaxSize().background(c.surface)) {
+    // Kopf verschwindet beim Runterscrollen und kommt beim Hochscrollen sofort zurück („quick return“)
+    val density = LocalDensity.current
+    var headerPx by remember { mutableIntStateOf(0) }
+    val header = remember(grid) {
+        // ganz oben scrollt der Kopf einfach mit dem Inhalt, sonst bliebe über der ersten Zeile eine Lücke
+        QuickReturnState(nearTop = { grid.firstVisibleItemIndex == 0 && grid.firstVisibleItemScrollOffset < headerPx })
+    }
+    header.maxPx = headerPx.toFloat()
+
+    Box(Modifier.fillMaxSize().background(c.surface).nestedScroll(header)) {
         LazyVerticalGrid(
             state = grid,
             columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 112.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 112.dp, top = with(density) { headerPx.toDp() } + 4.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }, key = "header", contentType = "header") {
-                Column(Modifier.windowInsetsPadding(WindowInsets.statusBars).padding(top = 24.dp)) {
-                    Header(actions)
-                    SearchField(state.query, actions.onQuery)
-                    FilterRow(state.chips, actions.onFilter)
-                    if (!state.loading && state.totalCount > 0) {
-                        Text(
-                            when {
-                                state.selecting -> "${state.selected.size} von ${state.cards.size} ausgewählt"
-                                state.cards.size == 1 -> "1 Rezept"
-                                else -> "${state.cards.size} Rezepte"
-                            },
-                            style = MaterialTheme.typography.labelLarge,
-                            color = if (state.selecting) c.primary else c.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                        )
-                    }
-                    if (busy) {
-                        Box(Modifier.fillMaxWidth().padding(top = 12.dp), contentAlignment = Alignment.Center) { LoadingIndicator() }
-                    }
-                }
-            }
             when {
                 state.loading -> item(span = { GridItemSpan(maxLineSpan) }) {
                     Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) { LoadingIndicator() }
@@ -177,6 +177,43 @@ fun OverviewContent(
                 }
             }
         }
+
+        // Kopf als Überlagerung über dem Raster, verschoben um den eingeklappten Teil
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .onSizeChanged { headerPx = it.height }
+                .offset {
+                    val y = if (grid.firstVisibleItemIndex == 0) maxOf(header.offsetPx, -grid.firstVisibleItemScrollOffset.toFloat()) else header.offsetPx
+                    IntOffset(0, y.roundToInt())
+                }
+                .background(c.surface)
+                .padding(horizontal = 16.dp),
+        ) {
+                Column(Modifier.windowInsetsPadding(WindowInsets.statusBars).padding(top = 24.dp)) {
+                    Header(actions)
+                    SearchField(state.query, actions.onQuery)
+                    FilterRow(state.chips, actions.onFilter)
+                    if (!state.loading && state.totalCount > 0) {
+                        Text(
+                            when {
+                                state.selecting -> "${state.selected.size} von ${state.cards.size} ausgewählt"
+                                state.cards.size == 1 -> "1 Rezept"
+                                else -> "${state.cards.size} Rezepte"
+                            },
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (state.selecting) c.primary else c.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+                        )
+                    }
+                    if (busy) {
+                        Box(Modifier.fillMaxWidth().padding(top = 12.dp), contentAlignment = Alignment.Center) { LoadingIndicator() }
+                    }
+                }
+        }
+
+        // Statusleiste bleibt ruhig, auch wenn der Kopf eingeklappt ist
+        Box(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(c.surface))
 
         // FAB „Neues Rezept“ – klappt beim Scrollen auf das Icon zusammen
         AnimatedVisibility(
@@ -252,9 +289,9 @@ private fun Header(actions: OverviewActions) {
                 colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = c.surfaceContainerHigh, contentColor = c.onSurfaceVariant),
             ) { Icon(KIcons.MoreVert, contentDescription = "Weitere Optionen") }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }, shape = RoundedCornerShape(16.dp)) {
-                DropdownMenuItem(text = { Text("Überrasch mich") }, leadingIcon = { Icon(KIcons.Dice, null) }, onClick = { menu = false; actions.onSurprise() })
                 // Import, Export und „Über die App“ liegen in den Einstellungen
                 DropdownMenuItem(text = { Text("Einstellungen") }, leadingIcon = { Icon(KIcons.Settings, null) }, onClick = { menu = false; actions.onSettings() })
+                DropdownMenuItem(text = { Text("Überrasch mich") }, leadingIcon = { Icon(KIcons.Dice, null) }, onClick = { menu = false; actions.onSurprise() })
             }
         }
     }
@@ -380,6 +417,12 @@ private fun RecipeCard(card: RecipeCardUi, photo: File?, selecting: Boolean, sel
                     Text(card.meta, style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant, maxLines = 1)
                 }
             }
+            if (card.missing != null) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Icon(KIcons.Cart, null, tint = c.primary, modifier = Modifier.size(16.dp))
+                    Text("Fehlt: ${card.missing}", style = MaterialTheme.typography.bodySmall, color = c.primary, fontWeight = FontWeight(600), maxLines = 2)
+                }
+            }
         }
     }
 }
@@ -394,5 +437,30 @@ private fun EmptyState(title: String, text: String) {
         Icon(KIcons.Restaurant, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(40.dp))
         Text(title, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight(700)), color = MaterialTheme.colorScheme.onSurface)
         Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+    }
+}
+
+/**
+ * Verschiebt den Kopf mit jeder Scrollbewegung (runter = einklappen, hoch = sofort wieder zeigen) und
+ * rastet nach dem Loslassen ganz ein oder aus. Die Liste scrollt dabei normal weiter.
+ */
+@Stable
+private class QuickReturnState(private val nearTop: () -> Boolean) : NestedScrollConnection {
+    var maxPx by mutableFloatStateOf(0f)
+    var offsetPx by mutableFloatStateOf(0f)
+        private set
+
+    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        offsetPx = (offsetPx + available.y).coerceIn(-maxPx, 0f)
+        return Offset.Zero
+    }
+
+    override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+        if (nearTop()) return Velocity.Zero
+        val target = if (offsetPx > -maxPx / 2) 0f else -maxPx
+        if (offsetPx != target) {
+            androidx.compose.animation.core.animate(offsetPx, target, animationSpec = androidx.compose.animation.core.spring(stiffness = 600f)) { v, _ -> offsetPx = v }
+        }
+        return Velocity.Zero
     }
 }

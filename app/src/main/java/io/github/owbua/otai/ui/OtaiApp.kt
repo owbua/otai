@@ -103,6 +103,7 @@ import io.github.owbua.otai.util.Photos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 
 @Serializable object OverviewRoute
@@ -200,7 +201,7 @@ fun OtaiApp(io: ImportExportViewModel) {
         ) {
             composable<OverviewRoute> {
               TopLevelScreen(barHeight, this) {
-                val vm = viewModel { OverviewViewModel(repo, kitchen) }
+                val vm = viewModel { OverviewViewModel(repo, kitchen, app.settings.state.map { it.pantryFilterMaxMissing }) }
                 val state by vm.state.collectAsStateWithLifecycle()
                 val scope = rememberCoroutineScope()
                 var exportIds by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -477,6 +478,7 @@ fun OtaiApp(io: ImportExportViewModel) {
                             onBack = { nav.popBackStack() },
                             onMaxMissing = app.settings::setSurpriseMaxMissing,
                             onMinResults = app.settings::setSurpriseMinResults,
+                            onPantryFilterMaxMissing = app.settings::setPantryFilterMaxMissing,
                             onImportFile = { importLauncher.launch(arrayOf("application/json", "application/zip", "application/x-zip-compressed", "text/plain", "application/octet-stream", "*/*")) },
                             onImportUrl = { urlDialog = true },
                             onPrompt = { nav.navigate(PromptRoute) },
