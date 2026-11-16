@@ -63,8 +63,8 @@ Technik: Kotlin, Jetpack Compose, material3 (Expressive), Navigation Compose, ko
 
 ### Releases
 
-Ein Tag `vX.Y.Z` (passend zu `versionName` in `app/build.gradle.kts`) startet den Workflow [`release.yml`](.github/workflows/release.yml):
-Tests, signierter Release-Build, Signaturprüfung, GitHub-Release mit `otai-vX.Y.Z.apk`.
+Steht auf `main` eine neue `versionName` in `app/build.gradle.kts`, für die es noch kein Release gibt, veröffentlicht der Workflow [`release.yml`](.github/workflows/release.yml) automatisch eins:
+Tests, signierter Release-Build, Signaturprüfung, Tag `vX.Y.Z` und GitHub-Release mit `otai-vX.Y.Z.apk`. Ein selbst gesetzter Tag `vX.Y.Z` startet denselben Ablauf.
 Der Signaturschlüssel liegt nur als Repository-Secret vor (`OTAI_KEYSTORE_BASE64`, `OTAI_KEYSTORE_PASSWORD`), nie im Repo.
 
 ## Entstehung
