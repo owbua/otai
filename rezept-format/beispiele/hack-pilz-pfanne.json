@@ -1,0 +1,143 @@
+{
+  "format": "kochbuch-rezept/1",
+  "id": "hack-pilz-pfanne",
+  "title": "Hack-Pilz-Pfanne",
+  "description": "Hackfleisch, Champignons und Erbsen in einer cremigen Paprika-Sahnesauce, dazu Salzkartoffeln – ein schnelles Pfannengericht.",
+  "servings": 2,
+  "category": "Hauptgericht",
+  "tags": [
+    "Hackfleisch",
+    "Pilze",
+    "Schnell"
+  ],
+  "difficulty": "Normal",
+  "times": {
+    "totalMin": 30,
+    "activeMin": 10,
+    "cookMin": 20
+  },
+  "ingredients": [
+    {
+      "key": "kartoffeln",
+      "amount": 400,
+      "unit": "g",
+      "name": "Kartoffeln, vorwiegend festkochende"
+    },
+    {
+      "key": "zwiebel",
+      "amount": 1,
+      "unit": null,
+      "name": "Zwiebel(n)"
+    },
+    {
+      "key": "champignons",
+      "amount": 100,
+      "unit": "g",
+      "name": "Champignons"
+    },
+    {
+      "key": "schnittlauch",
+      "amount": 0.5,
+      "unit": "Bund",
+      "name": "Schnittlauch"
+    },
+    {
+      "key": "oel",
+      "amount": 3,
+      "unit": "EL",
+      "name": "Öl"
+    },
+    {
+      "key": "hackfleisch",
+      "amount": 250,
+      "unit": "g",
+      "name": "Hackfleisch, gemischtes"
+    },
+    {
+      "key": "salz-pfeffer",
+      "amount": null,
+      "unit": null,
+      "name": "Salz und Pfeffer"
+    },
+    {
+      "key": "erbsen",
+      "amount": 100,
+      "unit": "g",
+      "name": "Erbsen, TK"
+    },
+    {
+      "key": "sahne",
+      "amount": 150,
+      "unit": "ml",
+      "name": "Schlagsahne"
+    },
+    {
+      "key": "wasser",
+      "amount": 150,
+      "unit": "ml",
+      "name": "Wasser"
+    },
+    {
+      "key": "paprikapulver",
+      "amount": 0.5,
+      "unit": "TL",
+      "name": "Paprikapulver, edelsüßes"
+    },
+    {
+      "key": "saucenbinder",
+      "amount": 1,
+      "unit": "TL",
+      "name": "Saucenbinder",
+      "note": "hell"
+    }
+  ],
+  "steps": [
+    {
+      "text": "Die Kartoffeln schälen, halbieren und in Salzwasser aufsetzen. Nach dem Aufkochen ca. 20 Min. garen.",
+      "ingredients": [
+        "kartoffeln"
+      ],
+      "timer": {
+        "seconds": 1200,
+        "label": "Kartoffeln kochen"
+      }
+    },
+    {
+      "text": "Währenddessen die Zwiebel fein würfeln, die Champignons säubern und vierteln, den Schnittlauch in Röllchen schneiden.",
+      "ingredients": [
+        "zwiebel",
+        "champignons",
+        "schnittlauch"
+      ]
+    },
+    {
+      "text": "Öl in einer großen Pfanne erhitzen und das Hackfleisch krümelig anbraten, dabei salzen und pfeffern. Zwiebel und Pilze zugeben und ca. 3 Min. mitbraten. Erbsen, Sahne und Wasser angießen, mit Salz, Pfeffer und Paprikapulver würzen, aufkochen lassen und mit Saucenbinder binden.",
+      "ingredients": [
+        "oel",
+        "hackfleisch",
+        "salz-pfeffer",
+        "erbsen",
+        "sahne",
+        "wasser",
+        "paprikapulver",
+        "saucenbinder"
+      ],
+      "timer": {
+        "seconds": 180,
+        "label": "Zwiebeln und Pilze mitbraten"
+      }
+    },
+    {
+      "text": "Die Kartoffeln abgießen und mit der Sauce anrichten, mit Schnittlauch bestreuen.",
+      "ingredients": [
+        "schnittlauch"
+      ]
+    }
+  ],
+  "nutrition": {
+    "kcal": 856,
+    "proteinG": 31.7,
+    "fatG": 60.4,
+    "carbsG": 46.8
+  }
+}

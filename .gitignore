@@ -1,0 +1,14 @@
+.gradle/
+build/
+/local.properties
+.idea/
+*.iml
+.kotlin/
+captures/
+# Signaturschlüssel und Builds gehören nicht ins Repo
+*.apk
+*.aab
+*.keystore
+*.jks
+*.p12
+/signing/

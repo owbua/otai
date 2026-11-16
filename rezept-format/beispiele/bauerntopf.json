@@ -1,0 +1,166 @@
+{
+  "format": "kochbuch-rezept/1",
+  "id": "bauerntopf",
+  "title": "Bauerntopf",
+  "description": "Eintopf für Tage, an denen es schnell und sättigend sein soll: Hackfleisch, Kartoffeln, Möhren und Paprika garen zusammen in einer kräftigen Tomatensauce.",
+  "servings": 3,
+  "category": "Eintopf",
+  "tags": [
+    "Hackfleisch",
+    "Deftig",
+    "One Pot"
+  ],
+  "difficulty": "Normal",
+  "times": {
+    "totalMin": 60,
+    "activeMin": 20,
+    "cookMin": 40
+  },
+  "ingredients": [
+    {
+      "key": "kartoffeln",
+      "amount": 500,
+      "unit": "g",
+      "name": "Kartoffel(n)"
+    },
+    {
+      "key": "moehren",
+      "amount": 2,
+      "unit": null,
+      "name": "Möhre(n)",
+      "note": "ca. 150 g"
+    },
+    {
+      "key": "paprika",
+      "amount": 2,
+      "unit": null,
+      "name": "Paprikaschote(n), bunte",
+      "note": "ca. 250 g"
+    },
+    {
+      "key": "oel",
+      "amount": 1,
+      "unit": "EL",
+      "name": "Öl"
+    },
+    {
+      "key": "hackfleisch",
+      "amount": 500,
+      "unit": "g",
+      "name": "Hackfleisch"
+    },
+    {
+      "key": "tomaten",
+      "amount": 400,
+      "unit": "g",
+      "name": "Tomaten, stückige",
+      "note": "aus der Dose"
+    },
+    {
+      "key": "tomatenmark",
+      "amount": 2,
+      "unit": "EL",
+      "name": "Tomatenmark"
+    },
+    {
+      "key": "bruehe",
+      "amount": 300,
+      "unit": "ml",
+      "name": "Gemüsebrühe",
+      "note": "z. B. instant"
+    },
+    {
+      "key": "zucker",
+      "amount": 1,
+      "unit": "TL",
+      "name": "Zucker",
+      "note": "gehäuft"
+    },
+    {
+      "key": "salz",
+      "amount": null,
+      "unit": null,
+      "name": "Salz"
+    },
+    {
+      "key": "schmand",
+      "amount": null,
+      "unit": null,
+      "name": "Schmand",
+      "note": "nach Belieben"
+    }
+  ],
+  "steps": [
+    {
+      "text": "Kartoffeln und Möhren schälen und in mundgerechte Würfel schneiden. Die Paprikaschoten entkernen und ebenfalls würfeln.",
+      "ingredients": [
+        "kartoffeln",
+        "moehren",
+        "paprika"
+      ]
+    },
+    {
+      "text": "Das Öl in einem großen Topf erhitzen und das Hackfleisch darin krümelig und kräftig braun anbraten.",
+      "ingredients": [
+        "oel",
+        "hackfleisch"
+      ]
+    },
+    {
+      "text": "Stückige Tomaten, Tomatenmark und Brühe einrühren, das vorbereitete Gemüse dazugeben. Mit Deckel ca. 40 Min. bei mittlerer Hitze köcheln lassen, bis die Kartoffeln weich sind. Ist die Sauce noch zu flüssig, die letzten Minuten ohne Deckel weiterköcheln.",
+      "ingredients": [
+        "tomaten",
+        "tomatenmark",
+        "bruehe"
+      ],
+      "timer": {
+        "seconds": 2400,
+        "label": "Zugedeckt köcheln"
+      }
+    },
+    {
+      "text": "Mit Salz und Zucker abschmecken. Wer mag, rührt zum Schluss einen Klecks Schmand unter.",
+      "ingredients": [
+        "zucker",
+        "salz",
+        "schmand"
+      ]
+    }
+  ],
+  "tips": [
+    {
+      "title": "Anderes Hack",
+      "text": "Rinderhack macht den Eintopf kräftiger, Geflügelhack leichter. Auch vegetarisches Hack funktioniert, dann lieber erst kurz vor Ende zugeben."
+    },
+    {
+      "title": "Ohne Schmand",
+      "text": "Ohne Schmand bleibt der Eintopf fruchtig-tomatig – Geschmackssache."
+    },
+    {
+      "title": "Reste verwerten",
+      "text": "Lauch, Zucchini oder Sellerie passen gut dazu und können einfach mitgeschmort werden."
+    },
+    {
+      "title": "Vorkochen",
+      "text": "Gekühlt hält sich der Eintopf etwa drei Tage. Beim Aufwärmen etwas Wasser angießen, er dickt nach."
+    },
+    {
+      "title": "Röstaromen",
+      "text": "Das Hackfleisch ruhig ein paar Minuten ohne Rühren braten lassen – die braunen Stellen bringen den Geschmack."
+    },
+    {
+      "title": "Nachwürzen",
+      "text": "Schmand nimmt Würze weg: nach dem Unterrühren noch einmal probieren."
+    },
+    {
+      "title": "Fertig, wenn …",
+      "text": "… sich die Kartoffeln mit einem Löffel leicht zerdrücken lassen und die Sauce sämig ist."
+    }
+  ],
+  "nutrition": {
+    "kcal": 571,
+    "proteinG": 31.9,
+    "fatG": 31.6,
+    "carbsG": 38.9
+  }
+}
